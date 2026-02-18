@@ -1,0 +1,48 @@
+# ===================================================================
+# Release Tracker .gitignore
+# ===================================================================
+
+# Build & Dependency Management
+# -----------------------------
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# IDE & Editor Configuration
+# --------------------------
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+
+# Secrets & Local Environment
+# ---------------------------
+.env
+application-local.properties
+application-local.yml
+application-local.yaml
+*.jks
+
+# Logs, Runtime & Dumps
+# --------------------
+*.log
+logs/
+hs_err_pid*
+replay_pid*
+
+# OS Specific
+# -----------
+.DS_Store
+Thumbs.db
+
+# Maven Wrapper
+# -------------
+!.mvn/wrapper/maven-wrapper.jar
