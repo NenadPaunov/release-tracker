@@ -26,9 +26,6 @@ release.properties
 # Secrets & Local Environment
 # ---------------------------
 .env
-application-local.properties
-application-local.yml
-application-local.yaml
 *.jks
 
 # Logs, Runtime & Dumps

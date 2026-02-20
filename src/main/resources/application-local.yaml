@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:6545/release_tracker_db
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9092/realms/neon
+
+logging:
+  level:
+    org.springframework.security: DEBUG

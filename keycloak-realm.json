@@ -1,0 +1,65 @@
+{
+  "id": "neon",
+  "realm": "neon",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "release-tracker-client",
+      "enabled": true,
+      "directAccessGrantsEnabled": true,
+      "publicClient": false,
+      "secret": "8QqKLMcusCZ5Qcw8zrWGsEKYldeX2cUU",
+      "redirectUris": [
+        "http://localhost:8080/*",
+        "http://localhost:9094/*"
+      ],
+      "webOrigins": ["*"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN",
+        "description": "Can create and manage releases"
+      },
+      {
+        "name": "USER",
+        "description": "Can only view releases"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@neon.ch",
+      "firstName": "Neon",
+      "lastName": "Admin",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ADMIN"]
+    },
+    {
+      "username": "user",
+      "enabled": true,
+      "email": "user@neon.ch",
+      "firstName": "Neon",
+      "lastName": "Neon",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["USER"]
+    }
+  ]
+}

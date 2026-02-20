@@ -1,0 +1,87 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    ports:
+      - "9094:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/release_tracker_db
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/neon
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=DEBUG
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - keycloak-network
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: release_tracker_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "6545:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql-init:/docker-entrypoint-initdb.d
+      - ./init-keycloak-db.sh:/docker-entrypoint-initdb.d/init-keycloak-db.sh
+    networks:
+      - keycloak-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d release_tracker_db" ]
+      interval: 25s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.2
+    command:
+      - start-dev
+      - --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak?useSSL=false
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_LOGLEVEL: DEBUG
+    ports:
+      - "9092:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak-realm.json:/opt/keycloak/data/import/realm.json
+      - ./keycloak-themes:/opt/keycloak/themes
+    networks:
+      - keycloak-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 0" ]
+      interval: 30s
+      timeout: 10s
+      retries: 2
+      start_period: 40s
+
+volumes:
+  postgres_data:
+  keycloak_data:
+
+networks:
+  keycloak-network:
+    driver: bridge
