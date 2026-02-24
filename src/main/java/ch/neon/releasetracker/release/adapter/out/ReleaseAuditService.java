@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,6 +43,10 @@ public class ReleaseAuditService {
                   UserRevisionEntity userRevisionEntity = (UserRevisionEntity) row[1];
                   RevisionType revisionType = (RevisionType) row[2];
 
+                  Map<String, Object> changes = new HashMap<>();
+                  changes.put("name", entity.getName());
+                  changes.put("status", entity.getStatus());
+
                   return new ReleaseAuditResponse(
                       userRevisionEntity.getId(),
                       revisionType.name(),
@@ -49,7 +54,7 @@ public class ReleaseAuditService {
                       LocalDateTime.ofInstant(
                           Instant.ofEpochMilli(userRevisionEntity.getRevtstmp()),
                           ZoneId.systemDefault()),
-                      Map.of("name", entity.getName(), "status", entity.getStatus()));
+                      changes);
                 })
             .toList();
   }
