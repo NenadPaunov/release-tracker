@@ -10,6 +10,15 @@ spring:
         jwt:
           issuer-uri: http://localhost:9092/realms/neon
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,httpexchanges
+  endpoint:
+    health:
+      show-details: always
+
 logging:
   level:
     org.springframework.security: DEBUG

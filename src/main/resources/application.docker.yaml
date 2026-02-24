@@ -1,10 +1,62 @@
+management:
+  server:
+    port: 8080
+
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,probes
+      base-path: /actuator
+
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: db, readinessState
+        liveness:
+          include: livenessState
+
+  info:
+    env:
+      enabled: true
+
+  health:
+    db:
+      enabled: true
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+    diskspace:
+      enabled: true
+      threshold: 10MB
+
 spring:
   datasource:
     url: jdbc:postgresql://postgres:5432/release_tracker_db
     username: admin
     password: admin
+  
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+  
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8080/realms/neon
+
+logging:
+  level:
+    root: INFO
+    ch.neon.releasetracker: INFO
+    org.hibernate.SQL: WARN
+    org.springframework.web: INFO

@@ -1,7 +1,8 @@
 server:
   port: 8080
   servlet:
-    context-path: /release_tracker/api
+    context-path: /release-tracker/api
+  shutdown: graceful
 
 management:
   server:
@@ -27,6 +28,14 @@ spring:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 app:
   timezone: Europe/Belgrade
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

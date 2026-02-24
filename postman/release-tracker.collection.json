@@ -1,0 +1,72 @@
+{
+  "info": {
+    "name": "Release Tracker API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const token = pm.environment.get(\"token\");",
+          "",
+          "const isTokenExpired = (token) => {",
+          "    if (!token) return true;",
+          "    try {",
+          "        const payload = JSON.parse(atob(token.split('.')[1]));",
+          "        const now = Math.floor(Date.now() / 1000);",
+          "        return payload.exp < (now + 30);",
+          "    } catch (e) {",
+          "        return true;",
+          "    }",
+          "};",
+          "",
+          "if (isTokenExpired(token)) {",
+          "    pm.sendRequest({",
+          "        url: 'http://localhost:9092/realms/neon/protocol/openid-connect/token',",
+          "        method: 'POST',",
+          "        header: { 'Content-Type': 'application/x-www-form-urlencoded' },",
+          "        body: {",
+          "            mode: 'urlencoded',",
+          "            urlencoded: [",
+          "                { key: 'grant_type', value: 'password' },",
+          "                { key: 'client_id', value: pm.environment.get('clientId') },",
+          "                { key: 'client_secret', value: pm.environment.get('clientSecret') },",
+          "                { key: 'username', value: pm.environment.get('username') },",
+          "                { key: 'password', value: pm.environment.get('password') }",
+          "            ]",
+          "        }",
+          "    }, (err, res) => {",
+          "        if (!err && res.code === 200) {",
+          "            pm.environment.set(\"token\", res.json().access_token);",
+          "        }",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Releases",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": "{{baseUrl}}/releases" } },
+        { "name": "Get One", "request": { "method": "GET", "url": "{{baseUrl}}/releases/:id" } },
+        {"name": "Create", "request": {"method": "POST", "body": {"mode": "raw", "raw": "{\"name\": \"v1.0.0\", \"description\": \"Setting initial status\", \"status\": \"Created\"}", "options": {"raw": {"language": "json"}}}, "url": "{{baseUrl}}/releases"}},
+        {"name": "Update", "request": {"method": "PUT", "body": {"mode": "raw", "raw": "{\"name\": \"v1.0.1\", \"description\": \"Updated status to in development\", \"status\": \"In Development\", \"releaseDate\": \"2026-09-01T10:00:00\", \"version\": \"1\"}", "options": {"raw": {"language": "json"}}}, "url": "{{baseUrl}}/releases/:id"}},
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/releases/:id" } }
+      ]
+    },
+    {
+      "name": "History",
+      "item": [
+        { "name": "Get Release History", "request": { "method": "GET", "url": "{{baseUrl}}/releases/:id/history" } }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  }
+}
